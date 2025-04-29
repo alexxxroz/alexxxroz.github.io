@@ -136,6 +136,13 @@ th {
   color:#444;
 }
 
+.avatar {
+  object-fit: cover;
+  overflow: hidden;
+  display: inline;
+  margin: 0 auto;
+}
+
 img {
   max-width:100%;
 /*  border-radius: 50%;*/
@@ -218,9 +225,9 @@ header ul a strong {
 }
 
 section {
-  width:500px;
-  float:right;
+  width:600px;
   padding-bottom:50px;
+  padding-left:300px;
 }
 
 small {

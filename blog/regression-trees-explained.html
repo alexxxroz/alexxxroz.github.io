@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Regression Trees Explained: The Most Intuitive Introduction | Aleksei Rozanov</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Public+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script>hljs.highlightAll();</script>
+  <style>
+    :root {
+      --primary-color: #282e34;
+      --secondary-color: #68f;
+      --bold-color: #a0c4ff;
+      --text-color: #fff;
+      --light-bg: #383f4a;
+      --dark-bg: #1c1f26;
+      --sidebar-width: 280px;
+      --transition-speed: 0.3s;
+      --code-bg: #2d333b;
+      --blockquote-bg: #2d333b;
+      --heading-font: 'Inter', sans-serif;
+      --body-font: 'Public Sans', sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .highlight {
+      color: var(--bold-color);
+      font-weight: bold;
+    }
+
+    body, html {
+      font-family: var(--body-font);
+      line-height: 1.6;
+      color: var(--text-color);
+      scroll-behavior: smooth;
+      background-color: var(--dark-bg);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--heading-font);
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--primary-color);
+      color: white;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      transition: transform var(--transition-speed);
+      z-index: 1000;
+    }
+    
+    .sidebar-header {
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-header img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--secondary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .sidebar-header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-header p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .sidebar-contact {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-contact a {
+      display: block;
+      color: var(--text-color);
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+      transition: color var(--transition-speed);
+    }
+    
+    .sidebar-contact a:hover {
+      color: var(--secondary-color);
+    }
+    
+    .sidebar-contact i {
+      width: 20px;
+      margin-right: 0.5rem;
+      text-align: center;
+    }
+    
+    .nav-links {
+      padding: 1rem 0;
+    }
+    
+    .nav-link {
+      display: block;
+      padding: 0.8rem 1.5rem;
+      color: white;
+      text-decoration: none;
+      transition: background-color var(--transition-speed);
+      font-size: 1rem;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--secondary-color);
+    }
+    
+    .nav-link i {
+      margin-right: 0.8rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+      gap: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .social-link {
+      color: white;
+      font-size: 1.2rem;
+      transition: color var(--transition-speed);
+    }
+    
+    .social-link:hover {
+      color: var(--secondary-color);
+    }
+    
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 2rem;
+      max-width: 100%;
+      background-color: var(--dark-bg);
+    }
+    
+    .blog-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+    
+    .blog-header {
+      margin-bottom: 2rem;
+    }
+    
+    .blog-title {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--secondary-color);
+    }
+    
+    .blog-subtitle {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+    
+    .blog-meta {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+      color: #999;
+    }
+    
+    .blog-meta span {
+      margin-right: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .blog-meta i {
+      margin-right: 0.5rem;
+    }
+    
+    .blog-featured-image {
+      width: 70%;
+      max-height: 70%;
+      display: block;
+      margin: auto;
+      align-items: center;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .blog-caption {
+      margin-top: 0.5rem;
+      margin-bottom: 2rem;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      text-align: center;
+      text-justify: inter-word;
+      color: #999;
+      font-style: italic;
+    }
+
+    .blog-body {
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+    
+    .blog-body p {
+      margin-bottom: 1.5rem;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+    
+    .blog-body h2 {
+      font-size: 1.8rem;
+      margin: 2.5rem 0 1rem;
+      color: var(--secondary-color);
+    }
+    
+    .blog-body h3 {
+      font-size: 1.4rem;
+      margin: 2rem 0 1rem;
+      color: var(--secondary-color);
+    }
+    
+    .blog-body ul, .blog-body ol {
+      margin: 1rem 0 1.5rem 2rem;
+    }
+    
+    .blog-body li {
+      margin-bottom: 0.5rem;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+    
+    .blog-body img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .blog-body figure {
+      margin: 2rem 0;
+    }
+    
+    .blog-body figcaption {
+      text-align: center;
+      font-style: italic;
+      color: #999;
+      margin-top: 0.5rem;
+    }
+    
+    .blog-body blockquote {
+      background-color: var(--blockquote-bg);
+      border-left: 4px solid var(--secondary-color);
+      padding: 1rem 1.1rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+    }
+    
+    .blog-body pre {
+      background-color: var(--code-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+    
+    .blog-body code {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: var(--code-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .blog-body pre code {
+      padding: 0;
+      background-color: transparent;
+    }
+    
+    .blog-footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .blog-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .blog-tag {
+      background-color: var(--light-bg);
+      color: var(--text-color);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background-color var(--transition-speed);
+    }
+    
+    .blog-tag:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    .blog-share {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .blog-share-link {
+      color: var(--text-color);
+      font-size: 1.2rem;
+      transition: color var(--transition-speed);
+    }
+    
+    .blog-share-link:hover {
+      color: var(--secondary-color);
+    }
+    
+    .blog-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .blog-nav-link {
+      display: flex;
+      align-items: center;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: color var(--transition-speed);
+      max-width: 45%;
+    }
+    
+    .blog-nav-link:hover {
+      color: var(--secondary-color);
+    }
+    
+    .blog-nav-link i {
+      margin: 0 0.5rem;
+    }
+    
+    .blog-nav-title {
+      font-weight: bold;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .mobile-nav-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1001;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .content {
+        margin-left: 0;
+      }
+      
+      .mobile-nav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .blog-title {
+        font-size: 2rem;
+      }
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background-color: var(--light-color);
+      color: white;
+      margin-top: 2rem;
+    }
+    
+    /* View counter styles */
+    .view-counter {
+      display: flex;
+      align-items: center;
+      color: #999;
+      font-size: 0.9rem;
+      margin-left: auto;
+    }
+    
+    .view-counter i {
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <button class="mobile-nav-toggle" id="mobileNavToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+  
+  <div class="container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../static/img1.jpg" alt="Aleksei Rozanov">
+        <h1>Aleksei Rozanov</h1>
+        <p>PhD Student at UMN</p>
+      </div>
+      
+      <div class="sidebar-contact">
+        <a href="mailto:rozan012@umn.edu"><i class="fas fa-envelope"></i> rozan012@umn.edu</a>
+        <a href="https://drive.google.com/file/d/1ozbM8F7RF5ALzArybRMXZQZbSZDoLMeK/view?usp=sharing" class="cv-link"><i class="fas fa-file-alt"></i>CV</a>
+      </div>
+      
+      <nav class="nav-links">
+        <a href="../index.html#home" class="nav-link">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="../index.html#blog" class="nav-link active">
+          <i class="fas fa-blog"></i> Blog
+        </a>
+        <a href="../index.html#publications" class="nav-link">
+          <i class="fas fa-book"></i> Publications
+        </a>
+      </nav>
+      
+      <div class="social-links">
+        <a href="https://medium.com/@alexroz" class="social-link" target="_blank">
+          <i class="fab fa-medium"></i>
+        </a>
+        <a href="https://github.com/alexxxroz" class="social-link" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/aleksei-rozanov/" class="social-link" target="_blank">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://scholar.google.com/citations?user=DyM0AjAAAAAJ&hl=en" class="social-link" target="_blank">
+          <i class="fas fa-graduation-cap"></i>
+        </a>
+      </div>
+    </aside>
+    
+    <main class="content">
+      <article class="blog-content">
+        <header class="blog-header">
+          <h1 class="blog-title">Regression Trees Explained: The Most Intuitive Introduction</h1>
+          <p class="blog-subtitle">Regression Tree in Python from Scratch</p>
+          <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> May 27, 2025</span>
+            <span><i class="far fa-clock"></i> 12 min read</span>
+            <div class="view-counter">
+              <i class="far fa-eye"></i> <span id="viewCount">0</span> views
+            </div>
+          </div>
+          <img src="./regression_trees/img1.png" alt="Regression Trees" class="blog-featured-image">
+          <p class="blog-caption">AI-generated image created using OpenAI's DALL-E through ChatGPT.</p>
+        </header>
+        
+        <div class="blog-body">
+          <p>The field of machine learning is often framed around two dominant classes of models: neural networks (NNs) and tree-based methods. Early in my ML journey, I found it surprisingly easy to build an intuition for how neural nets work. You take a weighted sum of your inputs, pass it through a non-linear activation function, and repeat across layers. Simple enough — at least on the surface.</p>
+          
+          <p>Decision trees, on the other hand, might sound like a naive or overly simplistic approach at first. But once you try building and training one from scratch, things quickly get more involved. And if you dive into <strong>regression trees</strong>, where the goal is to predict continuous values like temperature or price, any initial intuition you had tends to fly out the window.</p>
+          
+          <p>In this tutorial, I'll walk you through what I believe is the most intuitive explanation of regression trees. When I first tried to truly understand how decision (and especially regression) trees work, I found a chapter in the <a href="https://education.yandex.ru/handbook/ml/article/reshayushchiye-derevya" target="_blank" class="highlight">Yandex ML textbook</a> incredibly helpful — though unfortunately, it's only available in Russian. This article is inspired by the way they break down the concept.</p>
+          
+          <blockquote>As always all the code for this tutorial you can find on my&nbsp;<a href="https://github.com/alexxxroz" target="_blank" class="highlight"> GitHub</a>.</blockquote>
+          
+          <p>Let's begin by defining what a regression tree is. At its core, a tree is a graph-based model where each node represents a decision split (Fig. 1). These splits divide the data into regions in a way that optimizes a certain criterion. The key idea here is <strong>partitioning</strong>. So before jumping into the full algorithm, we'll go through a simple example to understand why this idea of partitioning is so important.</p>
+          
+          <figure>
+            <img src="./regression_trees/img2.webp" alt="Figure 1. A general scheme of an arbitrary decision tree and its components.">
+            <figcaption>Figure 1. A general scheme of an arbitrary decision tree and its components.</figcaption>
+          </figure>
+          
+          <h2>Intuition</h2>
+
+          <p>Imagine that you are given a regression dataset with have two continuous features and one continuous target.</p>
+          
+          <p>We can represent it as a 2D plot (Fig. 2), where the x and y axis represent X<sub>1</sub> and X<sub>2</sub>, and the color of the objects represents their value of Y.</p>
+          
+          <figure>
+            <img src="./regression_trees/img3.webp" alt="Figure 2. Synthetic dataset.">
+            <figcaption>Figure 2. Synthetic dataset.</figcaption>
+          </figure>
+          
+          <p>The goal of our decision tree is to split the feature space into a set of <strong>subspaces</strong> where the data points within each subspace are as similar to each other as possible. For now, we'll use arbitrary values for the decision nodes to illustrate the concept, but later, we'll dive into how these values are actually determined.</p>
+          
+          <h3>Step 1</h3>
+          <p>We start with a <strong>root node</strong> and define our first condition: if the value of feature X<sub>1</sub> is greater than some threshold t<sub>1</sub>. Visually, this can be represented as a vertical line splitting the 2D space (Fig. 3). This split creates two subregions: left and right from t<sub>1</sub>.</p>
+          
+          <figure>
+            <img src="./regression_trees/img4.webp" alt="Figure 3. First split.">
+            <figcaption>Figure 3. Partitioning in the first node.</figcaption>
+          </figure>
+          
+          <h3>Step 2</h3>
+          <p>Now let's zoom into region left region. Within this subspace, we introduce a new condition  — this time for feature X<sub>2</sub> with threshold t<sub>2</sub>. The new split (a horizontal line) further divides the left region into two suspaces which we will call R <sub>1</sub> and R <sub>2</sub> (Fig. 4).</p>
+          
+          <figure>
+            <img src="./regression_trees/img5.webp" alt="Figure 4. Second split.">
+            <figcaption>Figure 4. Partitioning in the second node.</figcaption>
+          </figure>
+        
+          <h3>Step 3</h3>
+          <p>By applying this process recursively (Fig. 5), i.e. splitting each region using simple threshold-based conditions , we keep dividing the space into smaller and more homogeneous subregions (resulting in R<sub>1</sub>-R<sub>5</sub>). The number of such splits is governed by the tree's depth, which corresponds to how many levels of decisions we make from root to leaf.</p>
+          
+          <figure>
+            <img src="./regression_trees/img6.webp" alt="Figure 5. Third split.">
+            <figcaption>Figure 5. Third split.</figcaption>
+          </figure>
+          
+          <blockquote>But now you might be wondering: “Okay, we split the space… so what?”</blockquote>
+          
+          <p>Well, here's the key insight — <span class="highlight">those regions define the model's predictions.</span></p>
+
+          <p>Each region contains training points with known values of the target variable Y. So when a new test point falls into one of those regions, the tree predicts its value as <span class="highlight">average of Y values</span> from the training points in that same region (Fig. 6).</p>
+          
+          <p>That's the core idea behind regression trees: instead of fitting a smooth curve, we're carving up the feature space into chunks where the target values are as homogeneous as possible. The tree learns to minimize variance within each region, making sure that the points grouped together are similar in value.</p>
+          
+          <figure>
+            <img src="./regression_trees/img7.webp" alt="Figure 6. Resulting tree structure.">
+            <figcaption>Figure 6. Resulting tree structure.</figcaption>
+          </figure>
+          
+          <p>As you can see, the way regression trees make predictions is actually quite intuitive. We just split the space, group similar points together, and average their values. Simple, right?</p>
+          <p>But now we’re facing a few important questions:</p>
+          <ul>
+            <li><i>How do we choose the variable to split by, and where exactly to place the threshold?</i></li>
+            <li><i>When should the tree stop growing?</i></li>
+            <li><i>What are the limitations of this architecture? Can a tree really approximate complex, non-linear functions?</i></li>
+          </ul>
+          <p>Let’s unpack each of these in the next sections.</p>
+        
+          <h3>Splitting</h3>
+          <p>To answer the first question, let’s introduce the idea of <strong>information gain</strong>, a key concept in decision trees. In regression tasks, most of us in the machine learning world are familiar with <strong>Mean Squared Error (MSE)</strong>. It’s the go-to metric for measuring how well our predictions match the actual values.</p>
+          
+          <p>At each step in building a regression tree, the model asks a simple question: <i>If we split the data at this point, will the overall MSE decrease?</i> In other words, does dividing the data create a better, more informative structure , or are we better off stopping here and turning this node into a leaf?</p>
+          
+          <p>So how does the tree decide where to split? There are several methods for finding a good threshold, but one of the most intuitive is based on percentiles of feature distributions. In a greedy, brute-force fashion, the tree goes through <span class='highlight'>percentile</span> values of each feature (in our case, just two), evaluating each one as a potential split point. If a threshold is found that reduces the MSE, the tree splits; if not, the node becomes a leaf.</p>
+          
+          <h3>Regularization</h3>
+          <p>The second question brings us to an essential concept in machine learning: regularization. Without it, regression trees can easily overfit the training data, i.e. memorizing instead of generalizing.</p>
+          
+          <p>To keep our tree in check, we introduce a set of parameters that control its growth and complexity:</p>
+          <ul>
+            <li><span class='highlight'>Maximum Tree Depth:</span> Limits how deep the tree can go. Deeper trees can model more complex patterns but are more likely to overfit.</li>
+            <li><span class='highlight'>Minimum Samples per Leaf:</span> Specifies the minimum number of training samples required for a node to become a leaf. This prevents the tree from creating tiny, overly specific leaves.</li>
+            <li><span class='highlight'>Minimum Samples per Split:</span> Ensures that a node must have a certain number of training samples before it’s even considered for splitting.</li>
+            <li><span class='highlight'>Minimum Information Gain:</span> Sets a threshold for how much the MSE must decrease to justify a split. If the improvement is negligible (say, just 1e10−101) we skip the split to avoid unnecessary complexity.</li>
+          </ul>
+
+          <p>…and there are other tuning knobs as well!</p>
+          <p>These hyperparameters act as guardrails, helping the model focus on meaningful patterns rather than noise.</p>
+
+          <h3>Drawbacks?</h3>
+          <p>Like any model, regression trees come with trade-offs.</p>
+          <ul>
+            <li><span class="highlight">No extrapolation:</span> Decision trees can't predict beyond the range of the training data. If you picture the feature space again, the tree makes predictions by partitioning it into known regions. So when it encounters an input that's far outside the range of what it's seen before, it simply can’t extrapolate a reasonable value.</li>
+            <li><span class="highlight">Step-wise approximation:</span> The output of a regression tree isn’t smooth — it looks more like a staircase (Fig. 7). That’s because the tree partitions the space into rectangular regions and assigns the average target value within each region. This step-wise prediction can be a poor fit for underlying continuous or smooth trends.</li>
+            <li><span class="highlight">Overfitting risk:</span> Without regularization, a decision tree can easily overfit. In the worst case, it could memorize the training set (i.e. create one region per data point ) achieving zero loss on the training data, but performing terribly on new, unseen data.</li>
+          </ul>
+          
+          <figure>
+            <img src="./regression_trees/img8.webp" alt="Figure 7. An exampe of step-wise approximation created by a regression tree. It’s evident that the tree is overfitting to the training data.">
+            <figcaption>Figure 7. An exampe of step-wise approximation created by a regression tree. It’s evident that the tree is overfitting to the training data.</figcaption>
+          </figure>
+          <hr>
+          <h2>Code</h2>
+          <p>As is often the case in machine learning, implementing the model as a Python class is the most convenient and intuitive approach. We’ll start by defining two simple methods: the initializer and the criterion function. The <code>__init__</code> method will store the structure of our tree, along with a regularization parameter, <code>max_depth</code>, to control how deep the tree can grow. The criterion method will be responsible for calculating MSE, which we’ll use to evaluate the quality of each split.</p>
+          <pre><code class="python">class RegressionTree:
+  def __init__(self, max_depth=8):
+    self.nodes = {}
+    self.thresholds = {}
+    self.leaves = {}
+    self.max_depth = max_depth
+
+  def criterion(self, true, pred):
+    return np.linalg.norm(true-pred)</code></pre>
+          
+          <p>Next, let’s move on to the core part: training the tree. We’ll begin with the <code>fit</code> method. Its role is fairly straightforward: it takes the training data <code>X</code> and targets <code>y</code>, then calls an internal recursive method called <code>grow_tree</code>. Once the recursion is complete and the tree is fully built, we print a message just to confirm that the fitting is done.</p>
+
+          <pre><code class="python">def fit(self, X, y):
+    self.grow_tree(X, y)
+
+    print(f'Trained!')</code></pre>
+          
+          <p>Now, the heart of this model is the <code>grow_tree</code> method. This is where the actual recursion happens. The function continuously splits a parent node into two child nodes (left and right), creating new subspaces at each level. This process continues until a stopping criterion is met (like hitting the maximum depth or finding no useful way to split the data).</p>
+          
+          <p>To keep track of the tree’s structure, we will use a simple but effective naming convention. Every node is assigned an ID, starting from <code>root</code>. Whenever we split left, we append <code>_0</code>, and for a right split, <code>_1</code>. So, a node with the ID <code>root_0_0_1</code> means we went left twice and then right once (it’s quite a convenient pattern when visualizing or debugging your tree).</p>
+          
+          <pre><code class="python">def grow_tree(self, X, y, depth=0, node_id='root'):
+    X_l, y_l, X_r, y_r, depth, stop = self.split(X, y, depth, node_id)
+    if not stop:
+      for idx, data in enumerate([[X_l, y_l], [X_r, y_r]]):
+        X_sub, y_sub = data
+        child_id = f"{node_id}_{idx}"
+        self.grow_tree(X_sub, y_sub, depth, child_id)</code></pre>
+          
+          <p>The main recursive logic lives inside the split function. It takes in:</p>
+          
+          <ul>
+            <li>the current data (<code>X</code>, <code>y</code>)</li>
+            <li>the current depth of the tree</li>
+            <li>the node ID (for tracking the node’s position in the tree)</li>
+          </ul>
+
+          <p>Within the function, we loop through each feature, and for each one, we generate a list of potential thresholds by computing 100 percentiles of its distribution. These thresholds act as candidates for splitting.</p>
+
+          <p>For each candidate threshold, the algorithm performs a virtual split of the data and computes the total error:</p>
+
+          <ul>
+            <li>First, we calculate the error before splitting — MSE of all <code>y</code> values at the current node.</li>
+            <li>Then we compute the <strong>after-split</strong> error — the sum of MSEs in the left and right subsets.</li>          
+          </ul>
+          <p>If this split reduces the error (i.e. after-split error is smaller than the original), we store the corresponding threshold and feature index. After testing all possible thresholds, we proceed with the best one.</p>
+          <p>If no split improves the error (i.e. we’ve hit a stopping condition), we turn the node into <span class="highlight">a leaf</span>. In this case, we simply store the mean value of <code>y</code> in that region and mark the node with a <code>stop=True</code> flag to end further partitioning. This is how recursion naturally halts when further splitting is not useful.</p>
+
+          
+
+          <pre><code class="python">def split(self, X, y, depth, node_id):
+  split_flag, best_feature_idx, best_threshold, best_criterion, stop = False, None, None, np.inf, False
+
+  pred_no_split = [float(y.mean())]*len(y)
+  no_split = self.criterion(y, pred_no_split)
+
+  for feature_idx, feature in enumerate(X.T):
+      thresholds = np.percentile(feature, np.arange(0, 101, 1))
+
+      for threshold in thresholds:
+        true_l, true_r = y[(feature&lt;threshold)], y[~(feature&lt;threshold)]
+        pred_l, pred_r = np.mean(y[(feature&lt;threshold)]), np.mean(y[~(feature&lt;threshold)])
+        split_l, split_r = self.criterion(true_l, pred_l), self.criterion(true_r, pred_r)
+
+        split = split_l + split_r
+
+        if no_split&gt;split: #if error is lower when splitting
+          split_flag = True
+          if best_criterion &gt; split: #if this split is better than all the previous
+            best_feature_idx = feature_idx
+            best_threshold = threshold
+            best_criterion = split
+
+  if split_flag == True and depth &lt; self.max_depth:
+    depth += 1
+    self.nodes[node_id] = best_feature_idx
+    self.thresholds[node_id] = float(best_threshold)
+
+    y_l, y_r = y[~(X.T[best_feature_idx]&lt;best_threshold)], y[(X.T[best_feature_idx]&lt;best_threshold)]
+    X_l, X_r = X[~(X.T[best_feature_idx]&lt;best_threshold)], X[(X.T[best_feature_idx]&lt;best_threshold)]
+  else:
+    self.leaves[node_id] = float(y.mean())
+    stop = True
+    y_l, y_r, X_l, X_r = None, None, None, None
+
+  return X_l, y_l, X_r, y_r, depth, stop
+</code></pre>
+          <p>Lastly, we need to implement the <code>predict</code> method so we can actually use our trained tree. The method works by iterating through each object in the test dataset and determining which leaf node it falls into by tracing a path from the root.</p>
+          <p>For every object, the traversal starts at the root node. At each node, the method checks whether the feature value is less than the current threshold. If it is, we move to the left child and append <code>_0</code> to the node ID; otherwise, we move to the right and append <code>_1</code>. This process continues until we arrive at a node marked as a leaf, which we can recognize by the <code>stop=True</code> flag.</p>
+          <p>Once the leaf is reached, the method returns the stored prediction , or simply the mean of the target values from all training points that ended up in that region. Following this procedure for each object gives us a full set of predictions from our trained regression tree.</p>
+          
+          <pre><code class="python"> def predict(self, X):
+    preds = []
+    for obj in X:
+      node = 'root'
+      while True:
+        if node in self.leaves:
+          pred = self.leaves[node]
+          preds.append(pred)
+          break
+
+        feature = self.nodes[node]
+        thr = self.thresholds[node]
+        if obj[feature] > thr:
+          node += '_0'
+        else:
+          node += '_1'
+    return np.array(preds)</code></pre>
+          
+          <h2>Testing</h2>
+          
+          <p>Now it’s time to put our regression tree to the test and see if it can actually solve a non-linear regression task. We’ll do this using two synthetic datasets, which give us full control over the underlying structure of the data.</p>
+
+          <p>Let’s begin with a simple case: a one-dimensional regression problem. We’ll generate a smooth curve (like a sine wave) and add some noise to simulate real-world data. The goal is to see whether the tree can approximate the non-linearity by learning meaningful splits and averaging the values within each partition.</p>
+
+          <pre><code class="python">rng = np.random.RandomState(10)
+X = np.sort(5 * rng.rand(80, 1), axis=0)
+y = np.sin(X).ravel()
+y[::5] += 3 * (0.5 - rng.rand(16))
+
+rng = np.random.RandomState(2)
+X_test = np.sort(5 * rng.rand(80, 1), axis=0)
+y_test = np.sin(X_test).ravel()
+y_test[::5] += 3 * (0.5 - rng.rand(16))</code></pre>
+
+          <p>Then let’s train two trees with different depths and get their predictions:</p>
+
+          <pre><code class="python">tree = RegressionTree(max_depth=4)
+tree.fit(X,y)
+
+tree2 = RegressionTree(max_depth=8)
+tree2.fit(X,y)
+
+y_1 = tree.predict(X_test)
+y_2 = tree2.predict(X_test)</code></pre>
+
+          <p>We will definitely need a code for visualization:</p>
+          <pre><code class="python">plt.figure()
+plt.scatter(X, y, s=20, edgecolor="black", c="darkorange", label="train_data")
+plt.scatter(X_test, y_test, s=10, edgecolor="black", c="black", label="test_data")
+plt.plot(X_test, y_1, color="cornflowerblue", label="max_depth=4", linewidth=2)
+plt.plot(X_test, y_2, color="yellowgreen", label="max_depth=8", linewidth=2)
+plt.xlabel("data")
+plt.ylabel("target")
+plt.title("Decision Tree Regression")
+plt.legend()
+plt.show()</code></pre>
+          <p>As you can see in Fig. 8, our regression tree does a solid job at approximating the non-linear function we created. When the tree depth is set to 8, it clearly overfits — capturing even small fluctuations caused by noise. In contrast, the tree with depth 4 produces a much smoother and more generalizable result.</p>
+
+          <figure>
+            <img src="./regression_trees/img9.webp" alt="Figure 8. The result of the first synthetic experiment.">
+            <figcaption>Figure 8. The result of the first synthetic experiment.</figcaption>
+          </figure>
+
+          <p>For the second experiment, let’s explore how the regression tree partitions data in a two-dimensional space. To do that, we’ll generate a dataset with two input features:</p>
+          
+          <pre><code class="python">n = 10000
+x1 = np.random.uniform(0.01, 1, n)
+x2 = np.random.uniform(0.01, 1, n)
+X = np.column_stack([x1,x2])
+y = np.where(
+    (x1 < 0.8) & (x2 > 0.9),
+    np.sin(1 / (x1 * x2 + 1e-3)),
+    3 * np.exp(-(x1 - 0.5)**2 - (x2 - 0.5)**2)
+)
+
+n = 1000
+x1_test = np.random.uniform(0.01, 1, n)
+x2_test = np.random.uniform(0.01, 1, n)
+X_test = np.column_stack([x1_test,x2_test])
+y_test = np.where(
+    (x1_test < 0.8) & (x2_test > 0.9),
+    np.sin(1 / (x1_test * x2_test + 1e-3)),
+    3 * np.exp(-(x1_test - 0.5)**2 - (x2_test - 0.5)**2)
+)</code></pre>
+
+          <p>Which will look like this (Fig. 9):</p>
+
+          <figure>
+            <img src="./regression_trees/img10.webp" alt="Figure 9. Dataset for the second experiment, where the axes represent X₁ and X₂ and color represents Y.">
+            <figcaption>Figure 9. Dataset for the second experiment, where the axes represent X₁ and X₂ and color represents Y.</figcaption>
+          </figure>
+          
+          <p>As a result, we can visualize each iteration of the tree-building process and compile them into a beautiful GIF:</p>
+
+          <figure>
+            <img src="./regression_trees/gif1.gif">
+          </figure>
+
+          <hr>
+          <h2>Summary</h2>
+          <p>In this tutorial, we tried to brake down regression trees from both intuitive and implementation perspectives. While decision trees may initially seem simplistic, building one from scratch reveals the smart mechanics behind recursive partitioning and variance reduction. By visualizing how the feature space is split and how predictions are made within regions, we demystified the way these models learn. With even a basic tree, we’ve seen how powerful this method can be in capturing non-linear relationships , especially when you’re in control of the algorithm’s logic. Whether you’re new to machine learning or looking to strengthen your fundamentals, understanding regression trees from the ground up is a rewarding step forward.</p>
+        </div>
+        
+        <footer class="blog-footer">
+          <div class="blog-nav">
+            <a href="#" class="blog-nav-link">
+              <i class="fas fa-arrow-left"></i>
+              <div>
+                <small>Previous</small>
+                <span class="blog-nav-title">Semantic Segmentation of <br>Remote Sensing Imagery using k-Means</span>
+              </div>
+            </a>
+            <a href="../index.html#blog" class="blog-nav-link" style="margin: 0 10px;">
+              <i class="fas fa-th-list"></i>
+            </a>
+            <a href="#" class="blog-nav-link">
+              <div style="text-align: right;">
+                <small>Next</small>
+                <span class="blog-nav-title">Introduction to Neural Networks <br>for Remote Sensing</span>
+              </div>
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </footer>
+      </article>
+      
+      <footer>
+        <p>&copy; 2025 Aleksei Rozanov. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+  
+  <script>
+    // Navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileNavToggle = document.getElementById('mobileNavToggle');
+      const sidebar = document.getElementById('sidebar');
+      
+      // Mobile navigation toggle
+      mobileNavToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+      });
+      
+      // Simple view counter simulation
+      const viewCount = document.getElementById('viewCount');
+      // In a real implementation, this would be fetched from a database or analytics service
+      // For demo purposes, we'll use localStorage to persist the count
+      let count = localStorage.getItem('regression-trees-views') || 0;
+      count = parseInt(count) + 1;
+      localStorage.setItem('regression-trees-views', count);
+      viewCount.textContent = count;
+    });
+  </script>
+</body>
+</html>

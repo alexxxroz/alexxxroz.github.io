@@ -1,167 +1,617 @@
-<!doctype html>
-<html>
-  <head>
-    <link rel="icon" href="./source/flav1.png" type="image/png">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="./static/flav3.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aleksei Rozanov</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #282e34;
+      --secondary-color: #68f;
+      --text-color: #fff;
+      --light-bg: #383f4a;
+      --dark-bg: #1c1f26;
+      --sidebar-width: 280px;
+      --transition-speed: 0.3s;
+      --heading-font: 'Inter', sans-serif;
+      --body-font: 'Public Sans', sans-serif;
 
-    <title>Aleksei Rozanov</title>
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body, html {
+      font-family: var(--body-font);
+      line-height: 1.6;
+      color: var(--text-color);
+      scroll-behavior: smooth;
+      background-color: var(--dark-bg);
+    }
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width">
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <a align="center"> <img src="./source/img4.jpg" class='avatar'> </a>
-
-        <h2 align="center"><br><strong>Aleksei Rozanov</strong></h2>
-        <p align="center"><strong>Research Assistant</strong> <br>
-        Department of Computer Science & Engineering,<br>
-        University of Minnesota, USA</p>
-        <div class="icon-container">
-          <a href="https://medium.com/@alexroz" class="social-icon">
-          <img src="./source/medium.png" alt="Medium" title="Medium" style='width:35px;height:35px;'>
-          </a>
-
-          <a href="https://www.linkedin.com/in/alexxxroz" class="social-icon" >
-          <img src="https://www.linkedin.com/favicon.ico" alt="LN" title="LinkedIn" style='width:35px;height:35px;'>
-          </a>
-
-          <a href="https://scholar.google.com/citations?hl=en&user=DyM0AjAAAAAJ" class="social-icon" >
-          <img src="https://scholar.google.com/favicon.ico" alt="Scholar" title="Google Scholar" style='width:35px;height:35px;'>
-          </a>
-
-          <a href="https://github.com/alexxxroz" class="social-icon" >
-          <img src="https://github.com/favicon.ico" alt="GitHub" title="GitHub" style='width:35px;height:35px;'>
-          </a>
-        </div>
-        <br><h2><a href="https://drive.google.com/file/d/1ozbM8F7RF5ALzArybRMXZQZbSZDoLMeK/view?usp=sharing" style="text-align: center; display: block;color:black;">CV</h2></a>
-        <br><p align="center"><strong>rozan012@umn.edu</strong></p>
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--heading-font);
+    }
+    
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--primary-color);
+      color: white;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      transition: transform var(--transition-speed);
+      z-index: 1000;
+    }
+    
+    .sidebar-header {
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-header img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--secondary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .sidebar-header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-header p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .sidebar-contact {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-contact a {
+      display: block;
+      color: var(--text-color);
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+      transition: color var(--transition-speed);
+    }
+    
+    .sidebar-contact a:hover {
+      color: var(--secondary-color);
+    }
+    
+    .sidebar-contact i {
+      width: 20px;
+      margin-right: 0.5rem;
+      text-align: center;
+    }
+    
+    .nav-links {
+      padding: 1rem 0;
+    }
+    
+    .nav-link {
+      display: block;
+      padding: 0.8rem 1.5rem;
+      color: white;
+      text-decoration: none;
+      transition: background-color var(--transition-speed);
+      font-size: 1rem;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--secondary-color);
+    }
+    
+    .nav-link i {
+      margin-right: 0.8rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+      gap: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .social-link {
+      color: white;
+      font-size: 1.2rem;
+      transition: color var(--transition-speed);
+    }
+    
+    .social-link:hover {
+      color: var(--secondary-color);
+    }
+    
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 2rem;
+      max-width: 100%;
+      background-color: var(--dark-bg);
+    }
+    
+    .section {
+      padding: 2rem 0;
+      max-width: 1200px; /* Increased from 800px */
+      margin: 0 auto;
+      display: none;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+    
+    .section.active {
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--secondary-color);
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 0.5rem;
+      display: inline-block;
+    }
+    
+    .blog-post {
+      margin-bottom: 3rem;
+      background: var(--primary-color);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      transition: transform var(--transition-speed);
+    }
+    
+    .blog-post:hover {
+      transform: translateY(-5px);
+    }
+    
+    .blog-post-image {
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .blog-post-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-speed);
+    }
+    
+    .blog-post:hover .blog-post-image img {
+      transform: scale(1.05);
+    }
+    
+    .blog-post-content {
+      padding: 1.5rem;
+    }
+    
+    .blog-post-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+    }
+    
+    .blog-post-meta {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #999;
+    }
+    
+    .blog-post-meta span {
+      margin-right: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .blog-post-meta i {
+      margin-right: 0.3rem;
+    }
+    
+    .blog-post-excerpt {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    
+    .read-more {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color var(--transition-speed);
+    }
+    
+    .read-more:hover {
+      background-color: #5577dd;
+    }
+    
+    .about-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .about-text {
+      flex: 2; /* Increased from 1 to take more space */
+      min-width: 300px;
+    }
+    
+    .about-image {
+      flex: 1;
+      min-width: 300px;
+      max-width: 400px;
+    }
+    
+    .about-image img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .interests-list, .affiliations-list, .education-list, .publications-list {
+      list-style-type: none;
+      margin-bottom: 1.5rem;
+    }
+    
+    .interests-list li, .affiliations-list li, .education-list li {
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    
+    .interests-list li:before, .affiliations-list li:before, .education-list li:before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--secondary-color);
+    }
+    
+    .publication-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #444;
+    }
+    
+    .publication-item:last-child {
+      border-bottom: none;
+    }
+    
+    .publication-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .publication-authors {
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+    
+    .publication-journal {
+      margin-bottom: 0.5rem;
+    }
+    
+    .publication-link {
+      display: inline-block;
+      color: var(--secondary-color);
+      text-decoration: none;
+    }
+    
+    .publication-link:hover {
+      text-decoration: underline;
+    }
+    
+    .mobile-nav-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1001;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
       
-      </header>
-
-      <section>
-
-        <h2 align='center'><strong>Researcher. Developer. Activator.</strong></h2>
-        <h3>👨‍🎓About me</h3>
-        <p>I’m a PhD student in Computer Science at the University of Minnesota advised by <a href="https://cse.umn.edu/cs/vipin-kumar" class="commit-link">Dr. Vipin Kumar</a>.
-          My research is focused on application of machine learning to Earth science problems, with a particular emphasis on remote sensing imagery.
-          Currently, I’m working on the problem of spatial upscaling to estimate global carbon and energy fluxes in terrestrial ecosystems.
-        </p>
-        <h3>🤓My broader interests include:</h3>
-        <ul>
-          <li> Machine Learning & AI </li>
-          <li> Upscaling/Downscaling </li>
-          <li> Multi/Hyperspectral Remote Sensing Imagery </li>
-          <li> Knowledge-Guided Machine Learning (KGML) </li>
-          <li> Big Geospatial Datasets </li>
-          <li> Super-resolution </li>
-        </ul>
-        <h3>🔎Affiliations:</h3>
-        <ul>
-          <li> <strong> Research Assistant</strong>, 2024-present, <a href="https://gems.umn.edu/runck-lab-real-time-geoinformation-systems" class="commit-link"> Real-time GeoInformation Systems Lab, University of Minnesota</a></li>
-          <li> <strong> Private Consultant</strong>, 01.2024-08.2024, Online </li>
-          <li> <strong> Research Assistant</strong>, 05.2021-08.2024, <a href="https://sciencedata.urfu.ru/portal/en/organisations/climate-and-environmental-physics-laboratory(9ae2ac95-02b4-4bde-910b-a76a4b400ae7)/publications.html" class="commit-link"> Climate and Environmental Physics Lab, Ural Federal University</a></li>
-          <li> <strong> Teaching Assistant</strong>, 07.2023 and 07.2024, <a href="https://neuromatch.io/climate-science/" class="commit-link">Climatematch Academy, Online </a></li>
-        </ul>
-
-        <h3>🎓Education:</h3>
-        <ul>
-          <li> <strong> Ph.D. Computer Science</strong>, 2025-present, University of Minnesota, MN, USA </li>
-          <li> <strong> M.S. GIS</strong>, 2024-2025, University of Minnesota, MN, USA </li>
-          <li> <strong> M.S. Big Data and Machine Learning</strong>, 2022-2024, ITMO University, Saint Petersburg, Russia </li>
-          <li> <strong> B.S. Hydrometeorology</strong>, 2018-2022, Ural Federal University, Yekaterinburg, Russia </li>
-        </ul>
-
-        <h3>🏆Recognition and Rewards:</h3>
-        <ul>
-          <li> <strong> MVP Challenge Award</strong>, 3,000$, MIN-CORPS, University of Minnesota, October, 2024 </li>
-          <li> <strong> University of Minnesota Institute of Environment Graduate Scholar</strong>, Agriculture and Climate Cohort, 2024 </li>
-          <li> <strong> Scholarship of Potanin Foundation for Master students</strong>, 2023-2024, ITMO University, Saint-Petersburg, Russia </li>
-        </ul>
-
-        <h3>📚Publications:</h3>
-        <ol>
-          <a href="./source/northflux.png" class="lightbox" data-lightbox="gallery">
-            <img src="./source/northflux.png" class="gallery-img" alt="Paper 3"> </a>
-          <li>
-            <p><strong>Rozanov A.</strong>, Gribanov K., Dyukarev E., and Zakharov V. "NorthFlux: Upscaling carbon fluxes in the northern hemisphere using an ensemble
-of regression machine learning models"(under review)</p>
-          </li>
-          <a href="./source/paper2.png" class="lightbox" data-lightbox="gallery"> 
-            <!-- <img src="./source/paper2.png" class="gallery-img" alt="Paper 2">  -->
-          </a>
-          <li>
-            <p><strong>Rozanov A.</strong>, Zadvornykh I., Gribanov K., and Zakharov V. "Estimates of Carbon Dioxide Flux into the Forest Ecosystem Based on Results of Ground-
-Based Hyperspectral Sounding of the Atmosphere and an Artificial Neural Network Model." Atmospheric and
-Oceanic Optics 37.2 (2024): 199-204.<a href="https://link.springer.com/article/10.1134/S1024856024700246" class="commit-link"> Read</a></p>
-          </li>
-
-          <!-- <a href="./source/paper3.png" class="lightbox" data-lightbox="gallery">   </a>-->
-          <!-- <img src="./source/paper3.png" class="gallery-img" alt="Paper 1"> -->
-          <li>
-            <p><strong>Rozanov A.</strong>, and Gribanov K. "A neural network model for estimating carbon fluxes in forest ecosystems
-from remote sensing data." Atmospheric and Oceanic Optics 36.4 (2023): 323-328. <a href="https://link.springer.com/article/10.1134/S1024856023040152" class="commit-link"> Read</a> </p>
-          </li>
-        </ol>
-        
-        <!-- <section class="gallery">
-          <h3>🗣️Testimonials</h3>
-          <div class="gallery-grid">
-            <div class="gallery-item">
-              <a href="./source/testim1.png" class="lightbox" data-lightbox="gallery">
-                <img src="./source/testim1.png" alt="Gallery Image 1" class="gallery-img">
-              </a>
-            </div>
-            <div class="gallery-item">
-              <a href="./source/testim2.png" class="lightbox" data-lightbox="gallery">
-                <img src="./source/testim2.png" alt="Gallery Image 2" class="gallery-img">
-              </a>
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .content {
+        margin-left: 0;
+      }
+      
+      .mobile-nav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background-color: var(--ligth-color);
+      color: white;
+      margin-top: 2rem;
+    }
+    
+    /* View counter styles */
+    .view-counter {
+      display: flex;
+      align-items: center;
+      color: #999;
+      font-size: 0.9rem;
+      margin-left: auto;
+    }
+    
+    .view-counter i {
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <button class="mobile-nav-toggle" id="mobileNavToggle">
+    <i class="fas fa-bars"></i>
+  </button>
+  
+  <div class="container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="./static/img1.jpg" alt="Aleksei Rozanov">
+        <h1>Aleksei Rozanov</h1>
+        <p>PhD Student at UMN</p>
+      </div>
+      
+      <div class="sidebar-contact">
+        <a href="mailto:rozan012@umn.edu"><i class="fas fa-envelope"></i> rozan012@umn.edu</a>
+        <a href="https://drive.google.com/file/d/1ozbM8F7RF5ALzArybRMXZQZbSZDoLMeK/view?usp=sharing" class="cv-link"><i class="fas fa-file-alt"></i>CV</a>
+      </div>
+      
+      <nav class="nav-links">
+        <a href="#home" class="nav-link active" data-section="home">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="#blog" class="nav-link" data-section="blog">
+          <i class="fas fa-blog"></i> Blog
+        </a>
+        <a href="#publications" class="nav-link" data-section="publications">
+          <i class="fas fa-book"></i> Publications
+        </a>
+      </nav>
+      
+      <div class="social-links">
+        <a href="https://medium.com/@alexroz" class="social-link" target="_blank">
+          <i class="fab fa-medium"></i>
+        </a>
+        <a href="https://github.com/alexxxroz" class="social-link" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/aleksei-rozanov/" class="social-link" target="_blank">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://scholar.google.com/citations?user=DyM0AjAAAAAJ&hl=en" class="social-link" target="_blank">
+          <i class="fas fa-graduation-cap"></i>
+        </a>
+      </div>
+    </aside>
+    
+    <main class="content">
+      <section id="home" class="section active">
+        <h2 class="section-title">Researcher. Developer. Activator.</h2>
+        <div class="about-content">
+          <div class="about-text">
+            <p>I'm a PhD student in Computer Science at the University of Minnesota advised by Dr. Vipin Kumar. My research is focused on application of machine learning to Earth science problems, with a particular emphasis on remote sensing imagery.</p>
+            <p>Currently, I'm working on the problem of spatial upscaling to estimate global carbon and energy fluxes in terrestrial ecosystems.</p>
+            
+            <h3 style="margin-top: 2rem; color: var(--secondary-color);">My broader interests include:</h3>
+            <ul class="interests-list">
+              <li>Machine Learning & AI</li>
+              <li>Upscaling/Downscaling</li>
+              <li>Multi/Hyperspectral Remote Sensing Imagery</li>
+              <li>Knowledge-Guided Machine Learning (KGML)</li>
+              <li>Big Geospatial Datasets</li>
+              <li>Super-resolution</li>
+            </ul>
+            
+            <h3 style="margin-top: 2rem; color: var(--secondary-color);">Affiliations:</h3>
+            <ul class="affiliations-list">
+              <li><strong>Research Assistant</strong>, 05.2025-present, Data Mining Lab, University of Minnesota</li>
+              <li><strong>Research Assistant</strong>, 08.2024-present, Real-time GeoInformation Systems Lab, University of Minnesota</li>
+              <li><strong>Private Consultant</strong>, 11.2023-08.2024, Online</li>
+              <li><strong>Research Assistant</strong>, 05.2021-08.2024, Climate and Environmental Physics Lab, Ural Federal University</li>
+              <li><strong>Teaching Assistant</strong>, 07.2023 and 07.2024, Climatematch Academy, Online</li>
+            </ul>
+            
+            <h3 style="margin-top: 2rem; color: var(--secondary-color);">Education:</h3>
+            <ul class="education-list">
+              <li><strong>Ph.D. Computer Science</strong>, 2025-present, University of Minnesota, MN, USA</li>
+              <li><strong>M.S. GIS</strong>, 2024-2025, University of Minnesota, MN, USA</li>
+              <li><strong>M.S. Big Data and Machine Learning</strong>, 2022-2024, ITMO University, Saint Petersburg, Russia</li>
+              <li><strong>B.S. Hydrometeorology</strong>, 2018-2022, Ural Federal University, Yekaterinburg, Russia</li>
+            </ul>
           </div>
-        </section> -->
-        <!-- <section>
-        <h3>🗺️ Maps</h3>
-        <div class="scroll-container">
-          <a href="./source/map1.png" >
-            <img src="./source/map1.png" style="width:250px; height: 150px;">
-          </a>
-          <a href="./source/map2.png" >
-            <img src="./source/map2.png" style="width:250px; height: 150px;">
-          </a>
-          <a href="./source/map3.png" >
-            <img src="./source/map3.png" style="width:250px; height: 150px;">
-          </a>
-          <a href="./source/map4.png" >
-            <img src="./source/map4.png" style="width:250px; height: 150px;">
-          </a>
+          <div class="about-image">
+            <img src="./static/img2.jpg" alt="Aleksei Rozanov">
+          </div>
         </div>
-        </section> -->
-
-        <h3>🗣️Testimonials</h3>
-        <div class="slideshow-container">
-            <div class="mySlides fade">
-              <a href="./source/testim1.png" >
-                <img src="./source/testim1.png" style="width:100%">
-              </a>
-            </div>
-          
-            <div class="mySlides fade">
-              <a href="./source/testim2.png" >
-                <img src="./source/testim2.png" style="width:100%">
-              </a>
-            </div>
-        </div>
-        <br>
+      </section>
+      
+      <section id="blog" class="section">
+        <h2 class="section-title">Blog</h2>
         
-        <div style="text-align:center">
-          <span class="dot" onclick="currentSlide(1)"></span>
-          <span class="dot" onclick="currentSlide(2)"></span>
+        <div class="blog-post">
+          <div class="blog-post-image">
+            <img src="./blog/regression_trees/img1.png" alt="Regression Trees">
+          </div>
+          <div class="blog-post-content">
+            <h3 class="blog-post-title">Regression Trees Explained: The Most Intuitive Introduction</h3>
+            <div class="blog-post-meta">
+              <span><i class="far fa-calendar"></i> May 27, 2025</span>
+              <div class="view-counter">
+                <i class="far fa-eye"></i> <span id="viewCount-regression-trees">0</span> views
+              </div>
+            </div>
+            <a href="./blog/regression-trees-explained.html" class="read-more">Read More</a>
+          </div>
         </div>
-
-        <p><small>Theme by <a href="https://github.com/orderedlist">Steve Smith</a></small></p>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-  </body>
+        
+        <div class="blog-post">
+          <div class="blog-post-image">
+            <img src="./blog/kmeans/img1.png" alt="Semantic Segmentation">
+          </div>
+          <div class="blog-post-content">
+            <h3 class="blog-post-title">Semantic Segmentation of Remote Sensing Imagery using k-Means</h3>
+            <div class="blog-post-meta">
+              <span><i class="far fa-calendar"></i> Mar 14, 2024</span>
+            </div>
+            </p>
+            <a href="https://medium.com/data-science/semantic-segmentation-of-remote-sensing-imagery-using-k-means-e4c165d9218e" class="read-more" target="_blank">Read on Medium</a>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+          <a href="https://medium.com/@alexroz" class="read-more" target="_blank" style="padding: 0.8rem 1.5rem;">
+            Read on Medium <i class="fas fa-external-link-alt" style="margin-left: 0.5rem;"></i>
+          </a>
+        </div>
+      </section>
+      
+      <section id="publications" class="section">
+        <h2 class="section-title">Publications</h2>
+        
+        <div class="publications-list">
+          <div class="publication-item">
+            <div class="publication-title">NorthFlux: Upscaling carbon fluxes in the northern hemisphere using an ensemble of regression machine learning models</div>
+            <div class="publication-authors">Rozanov A., Gribanov K., Dyukarev E., and Zakharov V.</div>
+            <div class="publication-journal">(under review)</div>
+          </div>
+          
+          <div class="publication-item">
+            <div class="publication-title">Estimates of Carbon Dioxide Flux into the Forest Ecosystem Based on Results of Ground-Based Hyperspectral Sounding of the Atmosphere and an Artificial Neural Network Model</div>
+            <div class="publication-authors">Rozanov A., Zadvornykh I., Gribanov K., and Zakharov V.</div>
+            <div class="publication-journal">Atmospheric and Oceanic Optics 37.2 (2024): 199-204</div>
+            <a href="https://link.springer.com/article/10.1134/S1024856024700246" class="publication-link">Read Paper</a>
+          </div>
+          
+          <div class="publication-item">
+            <div class="publication-title">A neural network model for estimating carbon fluxes in forest ecosystems from remote sensing data</div>
+            <div class="publication-authors">Rozanov A., and Gribanov K.</div>
+            <div class="publication-journal">Atmospheric and Oceanic Optics 36.4 (2023): 323-328</div>
+            <a href="https://link.springer.com/article/10.1134/S1024856023040152" class="publication-link">Read Paper</a>
+          </div>
+        </div>
+      </section>
+      
+      <footer>
+        <p>&copy; 2025 Aleksei Rozanov. All rights reserved.</p>
+      </footer>
+    </main>
+  </div>
+  
+  <script>
+    // Navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = document.querySelectorAll('.section');
+      const mobileNavToggle = document.getElementById('mobileNavToggle');
+      const sidebar = document.getElementById('sidebar');
+      
+      // Mobile navigation toggle
+      mobileNavToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+      });
+      
+      // Navigation click handler
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Update active link
+          navLinks.forEach(link => link.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Show corresponding section
+          const targetSection = this.getAttribute('data-section');
+          sections.forEach(section => {
+            section.classList.remove('active');
+            if (section.id === targetSection) {
+              section.classList.add('active');
+            }
+          });
+          
+          // Close mobile menu if open
+          if (window.innerWidth <= 768) {
+            sidebar.classList.remove('active');
+          }
+          
+          // Update URL hash
+          window.location.hash = targetSection;
+        });
+      });
+      
+      // Handle URL hash on page load
+      const handleHash = () => {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+          const targetLink = document.querySelector(`.nav-link[data-section="${hash}"]`);
+          if (targetLink) {
+            targetLink.click();
+          }
+        }
+      };
+      
+      // Initial hash handling
+      handleHash();
+      
+      // Listen for hash changes
+      window.addEventListener('hashchange', handleHash);
+      
+      // Simple view counter simulation for blog posts on the home page
+      const viewCountElement = document.getElementById('viewCount-regression-trees');
+      if (viewCountElement) {
+        let count = localStorage.getItem('regression-trees-views') || 0;
+        viewCountElement.textContent = count;
+      }
+    });
+  </script>
+</body>
 </html>
